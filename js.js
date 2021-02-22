@@ -23,7 +23,7 @@ const imgPaths = ['bag.jpg'
 const imgs = [];
 const extention = [];
 let cuntr = 0;
-const laps = 5;
+const laps = 25;
 const imgSection = document.getElementById('imgSec');
 const ritImg = document.getElementById('rit');
 const midImg = document.getElementById('mid');
@@ -46,72 +46,69 @@ for (let i = 0; i < imgPaths.length; i++) {
 for (let i = 0; i < imgPaths.length; i++) {
     extention.push(getExtention(imgPaths[i]));
 }
-function randImg(name, extention) {
-    this.name = name;
-    this.path = `./imgs/${name}.${extention}`;
+function RandImg(imgName, extention) {
+    this.name = imgName;
+    this.path = "./imgs/" + imgName + "." + extention;
     this.likes = 0;
     this.views = 0;
-    randImg.all.push(this);
+    RandImg.all.push(this);
 }
-randImg.all = [];
+RandImg.all = [];
 for (let i = 0; i < imgs.length; i++) {
-    new randImg(imgs[i], extention[i]);
+    new RandImg(imgs[i], extention[i]);
 }
 function render () {
-    let lftIndx = randmVal(0, imgs.length-1);
-    lftImg.src = randImg.all[lftIndx].path;
-    lftImg.title = randImg.all[lftIndx].name;
-    lftImg.alt = randImg.all[lftIndx].name;
-    let currntLftIndx = lftIndx;
-    if(lftIndx !== currntLftIndx){
-      Math.abs(lftIndx -= imgs.length);
-      currntLftIndx = lftIndx;
+  let prevMidIndx = -2;
+  let prevLftIndx = -1;
+  let prevRightIndx = 0;
+  /**************************************LEFT IMAGE********************************************/
+  let lftIndx = randmVal(0, imgs.length);
+  while (lftIndx === prevLftIndx || lftIndx === prevMidIndx || lftIndx === prevRightIndx) {
+    lftIndx = randmVal(0, imgs.length);
+    if(lftIndx !== prevLftIndx && lftIndx !== prevMidIndx && lftIndx !== prevRightIndx){
+      break;
     }
-    randImg.all[lftIndx].views++;
-    let midIndex = lftIndx;
-    let currntMid = midIndex;
-    if (midIndex !== currntMid){
-      Math.abs(midIndex -= imgs.length);
-      currntMid = midIndex;
+  }
+  lftImg.src = RandImg.all[lftIndx].path;
+  lftImg.title = RandImg.all[lftIndx].name;
+  lftImg.alt = RandImg.all[lftIndx].name;
+  RandImg.all[lftIndx].views++;
+  /**************************************MID IMAGE********************************************/
+  let midIndx = randmVal(0, imgs.length);
+  while (midIndx === prevLftIndx || midIndx === prevMidIndx || midIndx === prevRightIndx || midIndx === lftIndx) {
+    midIndx = randmVal(0, imgs.length);
+    if(midIndx !== prevLftIndx && midIndx !== prevMidIndx && midIndx !== prevRightIndx && midIndx !== lftIndx) {
+      break;
     }
-    
-    while (midIndex === lftIndx) {
-      midIndex = randmVal(lftIndx, imgs.length-1);
-      if(midIndex !== lftIndx) {
-        break;
-      }
+  }
+  midImg.src = RandImg.all[midIndx].path;
+  midImg.title = RandImg.all[midIndx].name;
+  midImg.alt = RandImg.all[midIndx].name;
+  RandImg.all[midIndx].views++;
+  /**************************************RIGHT IMAGE********************************************/
+  let rightIndx = randmVal(0, imgs.length);
+  while (rightIndx === prevLftIndx || rightIndx === prevMidIndx || rightIndx === prevRightIndx || rightIndx === lftIndx || rightIndx === midIndx) {
+    rightIndx = randmVal(0, imgs.length);
+    if(rightIndx !== prevLftIndx && rightIndx !== prevMidIndx && rightIndx !== prevRightIndx && rightIndx !== lftIndx && rightIndx !== midIndx){
+      break;
     }
-    debugger;
-    midImg.src = randImg.all[midIndex].path;
-    midImg.title = randImg.all[midIndex].name;
-    midImg.alt = randImg.all[midIndex].name;
-    randImg.all[midIndex].views++;
-    let rightIndex;
-    let currntRightIndx = rightIndex;
-    if (rightIndex !== currntRightIndx){
-      Math.abs(rightIndex -= imgs.length);
-      currntRightIndx = rightIndex;
-    }
-    while (midIndex !== lftIndx) {
-      rightIndex = randmVal(0, imgs.length -1);
-      if(rightIndex === lftIndx || rightIndex === midIndex){
-        rightIndex = randmVal(0, imgs.length -1);
-      } else {
-        break;
-      }
-    }
-    ritImg.src = randImg.all[rightIndex].path;
-    ritImg.title = randImg.all[rightIndex].name;
-    ritImg.alt = randImg.all[rightIndex].name;
-    randImg.all[rightIndex].views++;
+  }
+  ritImg.src = RandImg.all[rightIndx].path;
+  ritImg.title = RandImg.all[rightIndx].name;
+  ritImg.alt = RandImg.all[rightIndx].name;
+  RandImg.all[rightIndx].views++;
+
+  prevMidIndx = midIndx;
+  prevLftIndx = lftIndx;
+  prevRightIndx = rightIndx;
 }
 function barChart (){
   const ctx = document.getElementById('chartCont').getContext('2d');
   const liked = [];
   const viewed = [];
   for (let i = 0; i < imgs.length; i++) {
-    liked.push(randImg.all[i].likes);
-    viewed.push(randImg.all[i].views);
+    liked.push(RandImg.all[i].likes);
+    viewed.push(RandImg.all[i].views);
   }
   new Chart(ctx, {
     type: 'horizontalBar',
@@ -120,7 +117,6 @@ function barChart (){
       datasets: [
         {
           barPercentage: 0.5,
-          // barThickness: 6,
           borderWidth: 1,
           label: '# of Likes:',
           backgroundColor: '#2e2e2e',
@@ -142,9 +138,9 @@ function barChart (){
 }
 function clkabilty(event) {
     if(event.target.id !== 'imgSec'){
-      for (let i = 0; i < randImg.all.length; i++) {
-        if (randImg.all[i].name === event.target.title) {
-          randImg.all[i].likes++;
+      for (let i = 0; i < RandImg.all.length; i++) {
+        if (RandImg.all[i].name === event.target.title) {
+          RandImg.all[i].likes++;
         }
       }
       render();
@@ -165,10 +161,10 @@ function resultBtn(event) {
     const listSec = document.getElementById('list');
     const ul = document.createElement('ul');
     listSec.appendChild(ul);
-    for (let i = 0; i < randImg.all.length; i++) {
+    for (let i = 0; i < RandImg.all.length; i++) {
       const li = document.createElement('li');
       ul.appendChild(li);
-      li.textContent = `${randImg.all[i].name.toUpperCase()} had "${randImg.all[i].likes}" likes and was shown "${randImg.all[i].views}" times.`;
+      li.textContent = `${RandImg.all[i].name.toUpperCase()} had "${RandImg.all[i].likes}" likes and was shown "${RandImg.all[i].views}" times.`;
     }
 }
 render();
