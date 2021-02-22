@@ -49,7 +49,7 @@ li {
 }
 .btn {
     background-color: #e2e2e2;
-    color: black;
+    color: #2e2e2e;
     border: 2px solid #2e2e2e;
     font-family: 'Akaya Telivigala', cursive;
     width: 35%;
@@ -60,6 +60,21 @@ li {
 .btn:hover {
     background-color: #2e2e2e;
     color: #fafafa;
+}
+.Bar-chart {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2%;
+    position: relative;
+    top: 200px;
+    padding-bottom: 150px;
+}
+#chartCont {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0px;
 }
 .footer {
     position: fixed;
